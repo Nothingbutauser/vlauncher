@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>VALORANT 런처</title>
+
+  <!-- Pretendard -->
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Pretendard, system-ui, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: radial-gradient(circle at top, #1a1a1a, #0b0b0b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    /* 인트로 */
+    .container {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(25px);
+      animation: intro 0.9s ease-out forwards;
+    }
+
+    @keyframes intro {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin-bottom: 36px;
+      letter-spacing: 0.02em;
+    }
+
+    .r { color: #ff4655; }
+    .w { color: #ffffff; }
+
+    /* 다운로드 버튼 */
+    .download-btn {
+      display: inline-block;
+      padding: 16px 44px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff4655, #ff6b75);
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 14px 40px rgba(255, 70, 85, 0.45);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 22px 60px rgba(255, 70, 85, 0.65);
+    }
+
+    .download-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* 팝업 */
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .popup.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .popup-box {
+      background: #111;
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 420px;
+      max-width: 90%;
+      position: relative;
+      transform: scale(0.9);
+      animation: popupIn 0.35s ease forwards;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+    }
+
+    @keyframes popupIn {
+      to { transform: scale(1); }
+    }
+
+    .popup-box h2 {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+      color: #ff4655;
+    }
+
+    .popup-box p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      opacity: 0.85;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+
+    .close-btn:hover {
+      opacity: 1;
+    }
+
+    /* 코드 블록 */
+    pre {
+      margin-top: 40px;
+      background: #0e0e0e;
+      padding: 18px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      text-align: left;
+      overflow-x: auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    footer {
+      margin-top: 22px;
+      font-size: 0.75rem;
+      opacity: 0.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <span class="r">VALORANT</span>
+      <span class="w"> 런처</span>
+    </div>
+
+    <a
+      class="download-btn"
+      href="/dist/VALORANT%20런처.exe"
+      download
+      onclick="showPopup()"
+    >
+      <span class="r">다운로드</span>
+    </a>
+
+    <pre>
+<span class="r"># Launcher Source Code</span>
+eel.init("web")
+CONFIG_FILE = "config.json"
+VALORANT_CMD = [
+    r"C:\Riot Games\Riot Client\RiotClientServices.exe",
+    "--launch-product=valorant",
+    "--launch-patchline=live"
+]
+DEFAULT_CONFIG = {
+    "auto_close": False,
+    "random_voice": True
+}
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        save_config(DEFAULT_CONFIG)
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+def save_config(cfg):
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(cfg, f, indent=2, ensure_ascii=False)
+
+@eel.expose
+def launch_valorant():
+    cfg = load_config()
+    subprocess.Popen(VALORANT_CMD,shell=True)
+
+    time.sleep(3)
+    eel.close_window()
+    os._exit(0)
+eel.start("index.html", size=(420, 560))
+    </pre>
+
+    <footer>
+      <span class="r">GNU</span> Public License
+    </footer>
+  </div>
+
+  <!-- 다운로드 안내 팝업 -->
+  <div class="popup" id="popup">
+    <div class="popup-box">
+      <button class="close-btn" onclick="closePopup()">✕</button>
+      <h2>Security Notice</h2>
+      <p>
+        This launcher contains no viruses.<br>
+        Only download binaries from trusted sources.
+      </p>
+      <p style="margin-top:12px;">
+        <span class="r">Check out</span>
+        <span class="w"> the Launcher's source code!</span>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function showPopup() {
+      document.getElementById("popup").classList.add("show");
+    }
+
+    function closePopup() {
+      document.getElementById("popup").classList.remove("show");
+    }
+  </script>
+</body>
+</html>
